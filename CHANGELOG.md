@@ -109,6 +109,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **Bold synthesis headers with same-line bodies** — `**CONSENSUS:** All
+  agree.` no longer parses as `** All agree.`: the header pattern consumes a
+  trailing star run only when followed by whitespace, while bold first/last
+  content lines keep their markup. Fixes #72.
 - **Member endpoint copies** — dataclass replacement retains endpoint context;
   the endpoint is excluded from equality, repr and Hansard serialization.
 - **OpenRouter endpoint tier context** — `provider: openai` with OpenRouter's

@@ -119,3 +119,5 @@ def test_bold_header_variants_parse_clean():
     for header in ("**CONSENSUS:**", "**CONSENSUS**:", "### CONSENSUS", "CONSENSUS:"):
         s = parse_synthesis(f"{header}\nAll agree.", "Speaker")
         assert s.consensus == "All agree.", header
+        s = parse_synthesis(f"{header} All agree.", "Speaker")
+        assert s.consensus == "All agree.", header

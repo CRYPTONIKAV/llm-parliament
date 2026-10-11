@@ -83,12 +83,13 @@ def parse_synthesis(raw: str, speaker_name: str) -> Synthesis:
 
     # Try to extract sections — match plain headers (CONSENSUS:), markdown
     # h1-h6 (### CONSENSUS), and bold (**CONSENSUS**) variants. The pattern
-    # consumes every star adjacent to the keyword (including a trailing pair
-    # after the colon, as in **CONSENSUS:**), but only at end of line, so a
-    # body that starts on the same line keeps its own markup.
+    # consumes a trailing star run only when followed by whitespace, so
+    # **CONSENSUS:** on its own line and **CONSENSUS:** All agree. on one
+    # line both yield a clean body, while a body starting on the same line
+    # keeps its own markup.
     pattern = (
         r"(?:^|\n)\s*#{0,6}\s*\**(CONSENSUS|SPLIT|RISKS|RECOMMENDATION)\**"
-        r"\s*:?(?:\s*\**[ \t]*(?=\n|$))?\s*\n?"
+        r"\s*:?(?:[ \t]*\*+(?=\s))?[ \t]*\n?"
     )
     parts = re.split(pattern, raw, flags=re.IGNORECASE)
 
