@@ -109,6 +109,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **UTF-8 stdio for redirected runs** — `parliament doctor` (and every CLI
+  entry point) reconfigures a non-UTF-8 stdout/stderr to UTF-8 at startup, so
+  a Windows redirect using the ANSI code page (e.g. cp1252) no longer crashes
+  on `✓`/`📖` glyphs. Fixes #74.
 - **Member endpoint copies** — dataclass replacement retains endpoint context;
   the endpoint is excluded from equality, repr and Hansard serialization.
 - **OpenRouter endpoint tier context** — `provider: openai` with OpenRouter's

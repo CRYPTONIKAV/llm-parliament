@@ -57,12 +57,10 @@ def _ensure_utf8_streams() -> None:
     cp1252), so printing ✓ or 📖 raises UnicodeEncodeError. Reconfiguring to
     UTF-8 (with errors="replace" as a backstop) fixes redirected runs, CI
     logs and wrapping CLIs without touching TTY behavior. The module-level
-    consoles bound the old streams at import, so they are rebuilt too — but
-    only when a reconfigure actually happened, so tests patching
-    `parliament.cli.console` are unaffected.
+    consoles resolve ``sys.stdout``/``sys.stderr`` lazily at print time, so
+    no rebuild is needed — reconfiguring the streams is enough for the
+    import-time consoles to emit glyphs.
     """
-    global console, err_console
-    changed = False
     for name in ("stdout", "stderr"):
         stream = getattr(sys, name, None)
         encoding = getattr(stream, "encoding", "") or ""
@@ -75,18 +73,6 @@ def _ensure_utf8_streams() -> None:
             reconfigure(encoding="utf-8", errors="replace")
         except (OSError, ValueError):
             continue
-        changed = True
-    if changed:
-        console = (
-            Console(force_terminal=True, legacy_windows=False)
-            if sys.stdout.isatty()
-            else Console()
-        )
-        err_console = (
-            Console(stderr=True, force_terminal=True, legacy_windows=False)
-            if sys.stderr.isatty()
-            else Console(stderr=True)
-        )
 
 
 def _mock_config() -> dict:

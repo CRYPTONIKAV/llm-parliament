@@ -498,3 +498,20 @@ def test_utf8_streams_untouched_by_ensure(monkeypatch):
     )
     cli_module._ensure_utf8_streams()
     assert cli_module.console is before_console
+
+
+def test_doctor_survives_cp1252_stdout(monkeypatch, tmp_path):
+    """`parliament doctor` survives a cp1252 stdout via main() (#74)."""
+    import io
+
+    from parliament import cli as cli_module
+
+    monkeypatch.setenv("HOME", str(tmp_path))
+    fake_out = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")
+    monkeypatch.setattr("sys.stdout", fake_out)
+    try:
+        cli_module.main(["doctor"], standalone_mode=False)
+    except SystemExit as e:
+        assert e.code == 0
+    fake_out.flush()
+    assert "✓".encode() in fake_out.buffer.getvalue()
